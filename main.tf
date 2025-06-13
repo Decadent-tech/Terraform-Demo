@@ -1,7 +1,20 @@
+terraform {
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 4.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.0"
+    }
+  }
+}
+
 provider "google" {
-  credentials = file("keys/my-creds.json")
-  project     = "still-container-462815-g2" # Replace with your actual GCP project ID
-  region      = "us-central1"
+  project     = var.project
+  region      = var.location
+  credentials = file(var.credentials)
 }
 
 resource "random_id" "bucket_suffix" {
@@ -9,8 +22,8 @@ resource "random_id" "bucket_suffix" {
 }
 
 resource "google_storage_bucket" "demo_bucket" {
-  name          = "terraform-demo-bucket-unique123" # Change to something globally unique
-  location      = "US"
+  name          = "${var.gcs_bucket_name}-${random_id.bucket_suffix.hex}"
+  location      = var.location
   force_destroy = true
 
   lifecycle_rule {
@@ -21,13 +34,10 @@ resource "google_storage_bucket" "demo_bucket" {
       age = 3
     }
   }
+}
 
-  lifecycle_rule {
-    action {
-      type = "AbortIncompleteMultipartUpload"
-    }
-    condition {
-      age = 1
-    }
-  }
+resource "google_bigquery_dataset" "demo_dataset" {
+  dataset_id                  = var.bq_dataset_name
+  location                    = var.location
+  delete_contents_on_destroy = true
 }
