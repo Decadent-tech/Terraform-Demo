@@ -20,3 +20,10 @@ This repository contains a Terraform configuration to provision basic infrastruc
 
 ## 📁 Project Structure
 
+terraform-demo/
+├── keys/ # Stores service account JSON key (excluded via .gitignore)
+├── main.tf # Main Terraform configuration
+├── variables.tf # Variable declarations
+├── terraform.tfstate # Terraform state (excluded via .gitignore)
+├── .gitignore # Ensures sensitive files are not tracked
+└── README.md # Project documentation
